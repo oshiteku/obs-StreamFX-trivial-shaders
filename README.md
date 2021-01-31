@@ -1,1 +1,11 @@
 # obs-StreamFX-trivial-shaders
+
+Read in [**English**](README_en.md).
+
+obs-StreamFX-trivial-shaders は [StreamFX](https://github.com/Xaymar/obs-StreamFX) 用のシェーダ集です。
+
+## シェーダ一覧
+
+|Shader|Type|Description|
+-------|----|------------
+|[outline](filter/outline/)|filter|非透過領域の周りに枠線を描画するフィルタです。縁取り効果とも呼ばれます。参考動画: https://youtu.be/hZGJk9RVzZs|
