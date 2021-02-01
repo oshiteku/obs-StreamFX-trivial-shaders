@@ -9,3 +9,4 @@ obs-StreamFX-trivial-shaders is a collection of shader effects for [StreamFX](ht
 |Shader|Type|Description|
 -------|----|------------
 |[outline](filter/outline/)|filter|Draw a outline around a non-transparent area. ref: https://youtu.be/hZGJk9RVzZs|
+|[transparent-gradient](filter/transparent-gradient/)|filter|Apply a gradient transparency.|
