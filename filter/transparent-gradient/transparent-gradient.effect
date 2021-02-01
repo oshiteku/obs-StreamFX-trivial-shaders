@@ -1,0 +1,94 @@
+// OBS Params
+
+uniform float4x4 ViewProj<
+    bool automatic = true;
+    string name = "View Projection Matrix";
+>;
+
+uniform float4 ViewSize<
+    bool automatic = true;
+>;
+
+
+
+
+// StreamFX Params
+
+uniform texture2d InputA<
+    bool automatic = true;
+>;
+
+uniform float _0_vertical_max<
+    string name = "Vertical Max";
+    string field_type = "slider";
+    float minimum = 0.;
+    float maximum = 1.;
+    float step = 0.001;
+    float scale = 1.;
+> = 0.;
+
+uniform float _1_vertical_min<
+    string name = "Vertical Min";
+    string field_type = "slider";
+    float minimum = 0.;
+    float maximum = 1.;
+    float step = 0.001;
+    float scale = 1.;
+> = 0.;
+
+uniform float _2_horizontal_max<
+    string name = "Horizontal Max";
+    string field_type = "slider";
+    float minimum = 0.;
+    float maximum = 1.;
+    float step = 0.001;
+    float scale = 1.;
+> = 0.;
+
+uniform float _3_horizontal_min<
+    string name = "Horizontal Min";
+    string field_type = "slider";
+    float minimum = 0.;
+    float maximum = 1.;
+    float step = 0.001;
+    float scale = 1.;
+> = 0.;
+
+
+
+
+// Shader
+
+sampler_state linear_sampler {
+    AddressU  = Clamp;
+    AddressV  = Clamp;
+    Filter    = Linear;
+};
+
+struct VertData {
+    float4 pos : POSITION;
+    float2 uv  : TEXCOORD0;
+};
+
+VertData VSDefault(VertData v_in) {
+    VertData vert_out;
+    vert_out.pos = mul(float4(v_in.pos.xyz, 1.0), ViewProj);
+    vert_out.uv  = v_in.uv;
+    return vert_out;
+}
+
+float4 PSDefault(VertData v_in) : TARGET {
+    float4 x = InputA.Sample(linear_sampler, v_in.uv);
+    float v_a = saturate((v_in.uv.y - _1_vertical_min) / (_0_vertical_max - _1_vertical_min));
+    float h_a = saturate((v_in.uv.x - _3_horizontal_min) / (_2_horizontal_max - _3_horizontal_min));
+    return float4(x.rgb, x.a * v_a * h_a);
+}
+
+technique Draw
+{
+    pass
+    {
+        vertex_shader = VSDefault(v_in);
+        pixel_shader  = PSDefault(v_in);
+    }
+}
