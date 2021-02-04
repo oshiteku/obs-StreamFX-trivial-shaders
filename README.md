@@ -12,3 +12,5 @@ obs-StreamFX-trivial-shaders は [StreamFX](https://github.com/Xaymar/obs-Stream
 |[pixel-outline](filter/outline/)|filter|解像度の低いoutlineを描画します。ピクセルアートのような縁取り効果です。|
 |[transparent-gradient](filter/transparent-gradient/)|filter|徐々に透明になっていくグラデーション透過を適用します。|
 |[border-radius](filter/border-radius/)|filter|境界の角を丸めます。|
+|[squircle](filter/border-radius/)|filter|[Squircle](https://en.wikipedia.org/wiki/Squircle)によってソースをくり抜きます。|
+|[smooth-border-radius](filter/border-radius/)|filter|Squircleによって滑らかに境界の角を丸めます。|
