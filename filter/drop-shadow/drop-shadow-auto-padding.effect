@@ -1,0 +1,123 @@
+// Constant
+
+#define PI      3.1415926f
+#define PI2     6.2831853f
+#define _255    0.0039215f
+
+
+
+
+// OBS Params
+
+uniform float4x4 ViewProj<
+    bool automatic = true;
+    string name = "View Projection Matrix";
+>;
+
+uniform float4 ViewSize<
+    bool automatic = true;
+>;
+
+
+
+
+// StreamFX Params
+
+uniform texture2d InputA<
+    bool automatic = true;
+>;
+
+uniform float _0_offset_x<
+    string name = "Offset X";
+    string field_type = "slider";
+    float minimum = -1.;
+    float maximum = 1.;
+    float step = 0.01;
+    float scale = 0.1;
+> = 0.;
+
+uniform float _1_offset_y<
+    string name = "Offset Y";
+    string field_type = "slider";
+    float minimum = -1.;
+    float maximum = 1.;
+    float step = 0.01;
+    float scale = 0.1;
+> = 0.;
+
+uniform float _2_blur_radius<
+    string name = "Blur Radius";
+    string field_type = "slider";
+    float minimum = 0.;
+    float maximum = 255.;
+    float step = 1.;
+    float scale = 0.1;
+> = 64;
+
+uniform float4 _3_color<
+    string name = "Color";
+    string field_type = "slider";
+    float4 minimum = {0., 0., 0., 0.};
+    float4 maximum = {255., 255., 255., 255.};
+    float4 step = {1., 1., 1., 1.};
+    float4 scale = {_255, _255, _255, _255};
+> = {0., 0., 0., 64.};
+
+
+
+
+// Shader
+
+sampler_state linear_sampler {
+    AddressU  = Clamp;
+    AddressV  = Clamp;
+    Filter    = Linear;
+};
+
+struct VertData {
+    float4 pos : POSITION;
+    float2 uv  : TEXCOORD0;
+};
+
+VertData VSDefault(VertData v_in) {
+    VertData vert_out;
+    vert_out.pos = mul(float4(v_in.pos.xyz, 1.0), ViewProj);
+    vert_out.uv  = v_in.uv;
+    return vert_out;
+}
+
+float4 PSDefault(VertData v_in) : TARGET {
+    float quality = 1.0 / 8;
+    float n_dir = 16.0;
+    float q = max(floor(_2_blur_radius * quality), 1.0);
+    float2 r = _2_blur_radius / ViewSize.xy;
+
+    float2 uv = v_in.uv - float2(_0_offset_x, _1_offset_y) * 0.5;
+    uv = (uv - .5) * (1. + max(r.x, r.y) * 2 + max(abs(_0_offset_x), abs(_1_offset_y))) + .5;
+    float4 x = InputA.Sample(linear_sampler, uv);
+    x.a = x.a * (uv.x <= 1.) * (uv.y <= 1.) * (uv.x >= 0.) * (uv.y >= 0.);
+
+    float a1 = 0;
+    float count = 0;
+    for (float i = 1.0; i <= q; i++) {
+        float n = n_dir * i;
+        float2 k = r * i / q;
+        count += n;
+        for (float d = 0.0; d < PI2; d += PI2 / n) {
+            float2 uv2 = uv + float2(_0_offset_x, _1_offset_y) + float2(cos(d), sin(d)) * k;
+            float4 c = InputA.Sample(linear_sampler, uv2);
+            a1 += c.a * (uv2.x <= 1.) * (uv2.y <= 1.) * (uv2.x >= 0.) * (uv2.y >= 0.);
+        }
+    }
+    float4 shadow = float4(_3_color.rgb, _3_color.a * a1 / count);
+    return lerp(x, shadow, 1. - x.a);
+}
+
+technique Draw
+{
+    pass
+    {
+        vertex_shader = VSDefault(v_in);
+        pixel_shader  = PSDefault(v_in);
+    }
+}
