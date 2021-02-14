@@ -67,6 +67,7 @@ float4 PSDefault(VertData v_in) : TARGET {
     float2 h = ViewSize.xy * .5;
     float2 t = pow(max(abs(xy - h) - h + r, .0), n);
     float a = t.x + t.y - pow(r, n);
+    a = a / (pow(r, 3.3) + 1.); // avoid aliasing
     return float4(c.rgb, c.a * smoothstep(1., 0., a));
 }
 
