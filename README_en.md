@@ -16,3 +16,4 @@ obs-StreamFX-trivial-shaders is a collection of shader effects for [StreamFX](ht
 |[smooth-border-radius](filter/border-radius/)|filter|Smoothly round the corners of the border edge with squircles.|
 |[drop-shadow](filter/drop-shadow/)|filter|Apply a drop shadow effect.|
 |[drop-shadow-auto-padding](filter/drop-shadow/)|filter|Apply a drop shadow effect and automatic padding.|
+|[blink-pwm](filter/blink/)|filter|Apply a blinking effect.|
