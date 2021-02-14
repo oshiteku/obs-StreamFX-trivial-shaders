@@ -16,3 +16,4 @@ obs-StreamFX-trivial-shaders は [StreamFX](https://github.com/Xaymar/obs-Stream
 |[smooth-border-radius](filter/border-radius/)|filter|Squircleによって滑らかに境界の角を丸めます。|
 |[drop-shadow](filter/drop-shadow/)|filter|ドロップシャドウを適用します。|
 |[drop-shadow-auto-padding](filter/drop-shadow/)|filter|ドロップシャドウを適用します。加えて、描画領域に収まるように自動的に縮小を行います。|
+|[blink-pwm](filter/blink/)|filter|点滅エフェクトを適用します。|
