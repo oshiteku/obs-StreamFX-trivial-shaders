@@ -34,6 +34,7 @@ uniform float _0_distance<
     float maximum = 255.;
     float step = 1.;
     float scale = 1.;
+> = 32.;
 
 uniform float _1_angle<
     string name = "Angle";
@@ -42,7 +43,7 @@ uniform float _1_angle<
     float maximum = 180.;
     float step = 0.1;
     float scale = 1;
-> = 0.;
+> = -135.;
 
 uniform float4 _2_color<
     string name = "Color";
@@ -51,7 +52,7 @@ uniform float4 _2_color<
     float4 maximum = {255., 255., 255., 255.};
     float4 step = {1., 1., 1., 1.};
     float4 scale = {_255, _255, _255, _255};
-> = {255., 255., 255., 255.};
+> = {0., 0., 0., 255.};
 
 
 
