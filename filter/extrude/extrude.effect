@@ -33,8 +33,7 @@ uniform float _0_distance<
     float minimum = 0.;
     float maximum = 255.;
     float step = 1.;
-    float scale = 0.2;
-> = 64.;
+    float scale = 1.;
 
 uniform float _1_angle<
     string name = "Angle";
