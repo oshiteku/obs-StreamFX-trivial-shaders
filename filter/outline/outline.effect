@@ -36,7 +36,16 @@ uniform float _0_stroke<
     float scale = 0.1;
 > = 64.;
 
-uniform float4 _1_border<
+uniform float _1_smoothness<
+    string name = "Smoothness";
+    string field_type = "slider";
+    float minimum = 0.;
+    float maximum = 32.;
+    float step = 1.;
+    float scale = 0.1;
+> = 4.;
+
+uniform float4 _2_color<
     string name = "Color";
     string field_type = "slider";
     float4 minimum = {0., 0., 0., 0.};
@@ -74,15 +83,15 @@ float4 PSDefault(VertData v_in) : TARGET {
     float q = max(floor(_0_stroke * quality), 1.0);
     float2 r = _0_stroke / ViewSize.xy;
 
-    float a1 = 0;
+    float a = 0;
     for (float i = 1.0; i <= q; i++) {
         float n = n_dir * i;
         float2 k = r * i / q;
         for (float d = 0.0; d < PI2; d += PI2 / n) {
-            a1 += InputA.Sample(linear_sampler, v_in.uv + float2(cos(d), sin(d)) * k).a;
+            a += InputA.Sample(linear_sampler, v_in.uv + float2(cos(d), sin(d)) * k).a;
         }
     }
-    return lerp(x, _1_border, sign(a1) - x.a);
+    return lerp(x, _2_color, saturate(smoothstep(0., 1., a / _1_smoothness) - x.a));
 }
 
 technique Draw
