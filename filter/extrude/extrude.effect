@@ -1,0 +1,105 @@
+// Constant
+
+#define PI      3.1415926f
+#define PI2     6.2831853f
+#define _255    0.0039215f
+
+
+
+
+// OBS Params
+
+uniform float4x4 ViewProj<
+    bool automatic = true;
+    string name = "View Projection Matrix";
+>;
+
+uniform float4 ViewSize<
+    bool automatic = true;
+>;
+
+
+
+
+// StreamFX Params
+
+uniform texture2d InputA<
+    bool automatic = true;
+>;
+
+uniform float _0_distance<
+    string name = "Distance";
+    string field_type = "slider";
+    float minimum = 0.;
+    float maximum = 255.;
+    float step = 1.;
+    float scale = 0.2;
+> = 64.;
+
+uniform float _1_angle<
+    string name = "Angle";
+    string field_type = "slider";
+    float minimum = -180.;
+    float maximum = 180.;
+    float step = 0.1;
+    float scale = 1;
+> = 0.;
+
+uniform float4 _2_color<
+    string name = "Color";
+    string field_type = "slider";
+    float4 minimum = {0., 0., 0., 0.};
+    float4 maximum = {255., 255., 255., 255.};
+    float4 step = {1., 1., 1., 1.};
+    float4 scale = {_255, _255, _255, _255};
+> = {255., 255., 255., 255.};
+
+
+
+// Shader
+
+sampler_state linear_sampler {
+    AddressU  = Clamp;
+    AddressV  = Clamp;
+    Filter    = Linear;
+};
+
+struct VertData {
+    float4 pos : POSITION;
+    float2 uv  : TEXCOORD0;
+};
+
+VertData VSDefault(VertData v_in) {
+    VertData vert_out;
+    vert_out.pos = mul(float4(v_in.pos.xyz, 1.0), ViewProj);
+    vert_out.uv  = v_in.uv;
+    return vert_out;
+}
+
+float4 PSDefault(VertData v_in) : TARGET {
+    float4 x = InputA.Sample(linear_sampler, v_in.uv);
+    float quality = 1.0 / 2;
+    float n_dir = 16.0;
+    float q = max(floor(_0_distance * quality), 1.0);
+    float2 r = _0_distance / ViewSize.xy;
+
+    float a = 0;
+    float t = _1_angle * PI / 180.;
+    float count = 0;
+    for (float i = 1.0; i <= q; i++) {
+        float2 k = r * i / q;
+        float2 uv = v_in.uv + float2(cos(t), sin(t)) * k;
+        a += InputA.Sample(linear_sampler, uv).a;
+        count += 1;
+    }
+    return lerp(x, _2_color, saturate(smoothstep(0., 1., a) - x.a));
+}
+
+technique Draw
+{
+    pass
+    {
+        vertex_shader = VSDefault(v_in);
+        pixel_shader  = PSDefault(v_in);
+    }
+}
